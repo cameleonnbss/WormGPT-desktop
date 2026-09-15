@@ -199,7 +199,7 @@ const WIZ_LAST = 5;      // 0 Bienvenue, 1 Identité, 2 Apparence, 3 Modèle,
                          // 4 Assistant, 5 Récapitulatif
 let WIZ = { step: 0, lang: "en", userName: "", aiName: "WormGPT",
             preset: "Security Professional", tier: "", presets: [],
-            ui: {}, engine: {}, agreed: false, xkiroSaved: false,
+            ui: {}, engine: {}, xkiroSaved: false,
             agent: false, agentMode: "ask" };
 function wizardInit() {
   WIZ.lang = "en";
@@ -243,12 +243,9 @@ function renderWizard() {
   $("wiz-back").style.visibility = WIZ.step === 0 ? "hidden" : "visible";
   $("wiz-back").textContent = t("wizard.back");
   $("wiz-next").textContent = WIZ.step === WIZ_LAST ? t("wizard.launch") : t("wizard.next");
-  // Tant que l'accord utilisateur n'est pas coché, « Continuer » reste
-  // désactivé ; une fois coché il passe en rouge vif.
-  const gated = WIZ.step === 0 && !WIZ.agreed;
   const nextBtn = $("wiz-next");
-  nextBtn.disabled = gated;
-  nextBtn.classList.toggle("red", !gated);
+  nextBtn.disabled = false;
+  nextBtn.classList.add("red");
   const body = $("wiz-body");
   if (WIZ.step === 0) {
     // ---- écran 1 : bienvenue + langue ------------------------------
@@ -265,22 +262,7 @@ function renderWizard() {
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="de">Deutsch</option>
-        </select></div>
-      <div class="wiz-legal">
-        <div class="wiz-legal-t">${esc(t("wizard.legal.title"))}</div>
-        <p>${esc(t("wizard.legal.text"))}</p>
-        <label class="wiz-agree">
-          <input type="checkbox" id="wiz-agree"${WIZ.agreed ? " checked" : ""}/>
-          <span>${esc(t("wizard.legal.check"))}</span>
-        </label>
-      </div>`;
-    const agree = $("wiz-agree");
-    if (agree) agree.addEventListener("change", () => {
-      WIZ.agreed = agree.checked;
-      const b = $("wiz-next");
-      b.disabled = !WIZ.agreed;
-      b.classList.toggle("red", WIZ.agreed);
-    });
+        </select></div>`;
     $("wiz-lang").value = WIZ.lang;
     $("wiz-lang").addEventListener("change", () => {
       WIZ.lang = $("wiz-lang").value;
@@ -468,7 +450,6 @@ function renderWizard() {
 }
 $("wiz-back").addEventListener("click", () => { WIZ.step--; renderWizard(); });
 $("wiz-next").addEventListener("click", async () => {
-  if (WIZ.step === 0 && !WIZ.agreed) return;   // accord utilisateur requis
   if (WIZ.step === 1) {
     WIZ.aiName = ($("wiz-name").value || "WormGPT").trim();
     WIZ.userName = ($("wiz-username").value || "").trim();
@@ -478,7 +459,6 @@ $("wiz-next").addEventListener("click", async () => {
   await API.finish_setup({ language: WIZ.lang, user_name: WIZ.userName,
                            ai_name: WIZ.aiName, preset: WIZ.preset,
                            tier: WIZ.tier, ui: WIZ.ui, engine: WIZ.engine,
-                           agreed: WIZ.agreed,
                            agent: WIZ.agent, agentMode: WIZ.agentMode });
   location.reload();
 });
@@ -1136,9 +1116,6 @@ function renderSettings() {
         <div class="ctrl"><select class="input" id="st-tools-mode">
           <option value="ask">${esc(t("tools.mode_ask"))}</option>
           <option value="auto">${esc(t("tools.mode_auto"))}</option></select></div></div>
-      <div class="set-row"><label>${esc(t("tools.osint"))}
-        <span class="set-note" style="margin:4px 0 0">${esc(t("tools.osint.d"))}</span></label>
-        <div class="ctrl"><button class="switch ${tools.osint !== false ? "on" : ""}" id="st-osint-on"></button></div></div>
     </div>
     <div class="set-card"><h3>${esc(t("settings.api"))}</h3>
       <div class="set-note">${esc(t("settings.api.d"))}</div>
@@ -1182,8 +1159,6 @@ function renderSettings() {
         <div class="ctrl"><b class="mono" style="color:var(--accent)">cameleonmortis</b></div></div>
       <div class="set-row"><label>${esc(t("settings.version"))}</label>
         <div class="ctrl muted">${esc(S.version || "")}</div></div>
-      <div class="set-foot"><button class="btn primary sm" id="st-copy-discord">${esc(t("settings.contact.copy"))}</button>
-        <span class="set-status" id="st-contact-msg"></span></div>
     </div>
     <div class="set-card"><h3>${esc(t("settings.reset.title"))}</h3>
       <div class="set-row"><label>${esc(t("settings.reset"))}</label>
@@ -1310,9 +1285,6 @@ function bindSettings() {
   $("st-srv-port").addEventListener("change", () =>
     API.save_settings({ server: { port: Number($("st-srv-port").value) } }));
   sw("st-tools-on", (on) => API.save_settings({ tools: { enabled: on, mode: $("st-tools-mode").value } }));
-  sw("st-osint-on", (on) => API.save_settings({ tools: {
-    osint: on, enabled: $("st-tools-on").classList.contains("on"),
-    mode: $("st-tools-mode").value } }));
   $("st-tools-mode").addEventListener("change", () =>
     API.save_settings({ tools: { enabled: $("st-tools-on").classList.contains("on"), mode: $("st-tools-mode").value } }));
   /* personnalisation : accent, particules, verre */
@@ -1342,32 +1314,6 @@ function bindSettings() {
     ui.glass = on;
     applyUiPrefs();          // la classe no-glass bascule instantanément
     await API.save_settings({ ui: ui });
-  });
-  /* contact du développeur : on copie le pseudo Discord dans le presse-papier */
-  $("st-copy-discord").addEventListener("click", async () => {
-    const tag = "cameleonmortis";
-    let ok = false;
-    try {
-      await navigator.clipboard.writeText(tag);
-      ok = true;
-    } catch (e) {
-      ok = false;
-    }
-    if (!ok) {                       // repli pour les WebView sans clipboard
-      const ta = document.createElement("textarea");
-      ta.value = tag;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand("copy"); ok = true; } catch (e2) { ok = false; }
-      document.body.removeChild(ta);
-    }
-    const msg = $("st-contact-msg");
-    msg.textContent = t(ok ? "settings.contact.copied" : "settings.contact.copy_fail")
-      .replace("{tag}", tag);
-    msg.style.color = ok ? "var(--ok)" : "var(--err)";
-    setTimeout(() => { msg.textContent = ""; }, 2600);
   });
   document.querySelectorAll(".accent-dot").forEach((b) =>
     b.addEventListener("click", async () => {
@@ -1832,10 +1778,6 @@ function handleEvent(ev) {
                  (ok) => API.confirm_response(CF.id, ok));
       break;
     case "server_state":
-      if (!document.getElementById("settings-overlay").classList.contains("hidden"))
-        renderSettings();
-      break;
-    case "bot_state":
       if (!document.getElementById("settings-overlay").classList.contains("hidden"))
         renderSettings();
       break;

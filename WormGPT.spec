@@ -8,7 +8,7 @@ from PyInstaller.utils.win32.versioninfo import (
 )
 
 datas, binaries, hiddenimports = [], [], []
-for pkg in ("llama_cpp", "discord", "aiohttp", "webview"):
+for pkg in ("llama_cpp", "aiohttp", "webview"):
     try:
         d, b, h = collect_all(pkg)
     except Exception:

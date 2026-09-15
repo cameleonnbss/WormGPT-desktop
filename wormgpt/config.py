@@ -197,9 +197,7 @@ DEFAULTS = {
     "system_prompt_custom": False,
     "preset": "Security Professional",
     "server": {"enabled": False, "host": "127.0.0.1", "port": 1234},
-    "discord": {"enabled": False, "token": "", "prefix": "!", "channel_id": ""},
-    "tools": {"enabled": False, "mode": "ask", "cwd": "",
-              "osint": True},
+    "tools": {"enabled": False, "mode": "ask", "cwd": ""},
     # API distantes compatibles OpenAI / Anthropic (facultatif, désactivé)
     "remote": {"active": ""},
     "providers": {

@@ -1,6 +1,6 @@
 """Headless core controller — the web UI talks to this through the bridge.
 
-Owns the engine, downloads, agent loop, local server, Discord bot, image
+Owns the engine, downloads, agent loop, local server, image
 generation, and pushes JSON events to the UI:
 
     {"type": "status",        "state": "...", "text": "..."}
@@ -18,7 +18,6 @@ generation, and pushes JSON events to the UI:
     {"type": "confirm",       "id": 1, "cmd": "...", "cwd": "..."}
     {"type": "model_changed", "tier": "..."}
     {"type": "server_state",  "running": true, "port": 1234}
-    {"type": "bot_state",     "running": true}
 
 The same behaviour is available in the Tk build (wormgpt/ui/app.py) — the two
 implementations are kept in sync feature-wise.
@@ -35,13 +34,11 @@ import traceback
 import uuid
 
 from . import config as C
-from . import discordbot as DB
 from . import engine as E
 from . import filesys as FS
 from . import i18n as _
 from . import imagegen as IG
 from . import models as M
-from . import osint as OS
 from . import remote as RM
 from . import runner as R
 from . import search as SR
@@ -60,7 +57,6 @@ class Core:
         self.downloads = {}
         self.generating = False
         self.server = None
-        self.bot = None
         self._hist_lock = threading.Lock()
         self._load_latest_conversation()
         self._confirm_evt = None
@@ -312,9 +308,6 @@ class Core:
             self._set_status("off", _.tr("status.not_installed"))
         if self.cfg.get("server", {}).get("enabled"):
             self.start_server()
-        if self.cfg.get("discord", {}).get("enabled") and \
-                self.cfg.get("discord", {}).get("token"):
-            self.start_bot()
 
     def select_model(self, tier_name):
         # Un modèle absent du disque ne peut JAMAIS être sélectionné ni
@@ -735,8 +728,6 @@ class Core:
     def _agent_tools(self):
         """Schéma d'outils exposé au modèle pour la boucle d'agent."""
         tools = list(FS.TOOLS)
-        if self.cfg.get("tools", {}).get("osint", True):
-            tools += list(OS.TOOLS)
         if self.cfg.get("search", {}).get("enabled"):
             tools.append(SR.WEB_SEARCH_TOOL)
         return tools
@@ -899,24 +890,6 @@ class Core:
         if name in ("grep", "search_files"):
             return FS.grep(args.get("pattern", ""), args.get("path", ""),
                            cwd=cwd, include=args.get("include", ""))
-        # -- OSINT (reconnaissance passive sur des cibles publiques) --------
-        if name == "dns_lookup":
-            return OS.dns_lookup(args.get("domain", ""),
-                                 args.get("record_type", "A"))
-        if name == "whois_lookup":
-            return OS.whois_lookup(args.get("domain", ""))
-        if name == "http_probe":
-            return OS.http_probe(args.get("url", ""))
-        if name == "ip_info":
-            return OS.ip_info(args.get("ip", ""))
-        if name == "port_scan":
-            return OS.port_scan(args.get("host", ""), args.get("ports", ""))
-        if name == "subdomains":
-            return OS.subdomains(args.get("domain", ""))
-        if name == "username_recon":
-            return OS.username_recon(args.get("username", ""))
-        if name == "email_recon":
-            return OS.email_recon(args.get("email", ""))
         return f"[unknown tool: {name}]"
 
     @staticmethod
@@ -1144,60 +1117,6 @@ class Core:
                                                      max_tokens=max_tokens)
         return text
 
-    # ----------------------------------------------------------- discord --
-
-    def start_bot(self):
-        d = self.cfg.setdefault("discord", {})
-        token = (d.get("token") or "").strip()
-        if not token:
-            self._set_status("error", _.tr("discord.err_token"))
-            return False
-        try:
-            bot = DB.DiscordBot(
-                token,
-                prefix=(d.get("prefix") or "") or "!",
-                channel_id=(d.get("channel_id") or "") or "",
-                handler=self._bot_generate,
-                on_status=lambda s: self._bot_status(s),
-            )
-            bot.start()
-        except RuntimeError as exc:
-            self._set_status("error", str(exc))
-            return False
-        self.bot = bot
-        d["enabled"] = True
-        C.save(self.cfg)
-        self.post({"type": "bot_state", "running": True})
-        self._set_status("loading", _.tr("discord.title") + "…")
-        return True
-
-    def stop_bot(self):
-        if self.bot:
-            self.bot.stop()
-            self.bot = None
-        self.cfg.setdefault("discord", {})["enabled"] = False
-        C.save(self.cfg)
-        self.post({"type": "bot_state", "running": False})
-        self._set_status("off", _.tr("discord.status_stopped"))
-        return True
-
-    def _bot_status(self, status_text):
-        if status_text.startswith("Discord error"):
-            self._set_status("error", _.trf("discord.err_connect",
-                                            e=status_text))
-            self.cfg.setdefault("discord", {})["enabled"] = False
-            C.save(self.cfg)
-            self.post({"type": "bot_state", "running": False})
-        else:
-            self._set_status("ready", status_text)
-
-    def _bot_generate(self, text):
-        if self.engine is None or not self.engine.is_loaded():
-            return _.tr("err.no_model")
-        msgs = E.build_messages(self._system_prompt(), [], text)
-        out, _calls, _reason = self.engine.complete(msgs)
-        return out or "(no reply)"
-
     # ------------------------------------------------------- image gen --
 
     def generate_image(self, prompt, size="512x512", steps=0, model="",
@@ -1315,11 +1234,6 @@ class Core:
                 self.server.stop()
         except Exception:
             pass
-        try:
-            if self.bot:
-                self.bot.stop()
-        except Exception:
-            pass
         self.cfg.clear()
         # IMPORTANT : defaults propres (pas C.load() qui relirait le VIEUX
         # fichier disque avant suppression) — sinon "configured" survit au
@@ -1339,16 +1253,9 @@ class Core:
         self.post({"type": "factory_reset_done"})
         return {"ok": True}
 
-    # -------------------------------------------------------------- misc --
-
-    def shutdown(self):
+    # -------------------------------------------------------------- misc --    def shutdown(self):
         try:
             if self.server:
                 self.server.stop()
-        except Exception:
-            pass
-        try:
-            if self.bot:
-                self.bot.stop()
         except Exception:
             pass

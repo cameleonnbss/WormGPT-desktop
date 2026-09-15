@@ -147,11 +147,10 @@ size is verified before it is installed.
   Stable Diffusion WebUI; optional negative prompt, steps and CFG.
 - **Web search** — DuckDuckGo / Wikipedia results fed back into the model.
 - **Agent mode (Local Commands)** — the model can read, write and edit files,
-  list/glob/grep folders, run shell commands and do passive OSINT, chaining
+  list/glob/grep folders and run shell commands, chaining
   tools until the task is done. "Ask" mode shows every command for approval;
   "Auto" runs without asking. Off by default.
 - **Local API server** — OpenAI- and Anthropic-compatible on `127.0.0.1`.
-- **Discord bot** — optional, your own token; replies with the active model.
 - **Remote APIs** — OpenAI, Anthropic, xKiro or any compatible endpoint; their
   models appear in the same list as local ones.
 - **Personalisation** — accent colour, animated particles, liquid-glass blur,
@@ -182,8 +181,7 @@ on your machine. Network access only happens when you:
 
 - download a model from Hugging Face,
 - enable web search,
-- enable an optional remote API and chat with it,
-- run the Discord bot with your own token.
+- enable an optional remote API and chat with it.
 
 Check the code: there is no telemetry module, no remote logging endpoint and no
 hard-coded token anywhere in this repository.

@@ -553,11 +553,6 @@ body[data-accent-light] .btn.red{background:var(--accent);border-color:var(--acc
 .btn.red:hover{filter:brightness(1.08)}
 .btn:disabled{opacity:.38;filter:grayscale(1);cursor:not-allowed;box-shadow:none}
 /* --- encadré légal du wizard --- */
-.wiz-legal{margin-top:18px;padding:13px 15px;border:1px solid rgba(var(--accent-rgb),.35);border-radius:12px;background:rgba(var(--accent-rgb),.05)}
-.wiz-legal-t{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.wiz-legal p{margin:0;font-size:11.5px;line-height:1.6;color:var(--muted)}
-.wiz-agree{display:flex;align-items:flex-start;gap:9px;margin-top:11px;font-size:11.5px;color:var(--text);cursor:pointer}
-.wiz-agree input{width:15px;height:15px;margin-top:1px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
 /* --- blocs de configuration API --- */
 .api-block{margin-top:12px;padding:11px 13px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.02)}
 .api-block .set-row{padding:2px 0}

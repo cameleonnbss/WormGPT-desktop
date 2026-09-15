@@ -314,22 +314,6 @@ check("search flags sponsored blocks",
 check("search backends list",
       callable(SR.duckduckgo_lite) and callable(SR.duckduckgo_html))
 
-# discord guard (discord.py not installed in dev env)
-from wormgpt import discordbot as DB  # noqa: E402
-try:
-    import discord  # noqa: F401
-    _has_discord = True
-except ImportError:
-    _has_discord = False
-if not _has_discord:
-    try:
-        DB.DiscordBot("fake", handler=lambda t: "").start()
-        check("discord import guard", False, "no exception raised")
-    except RuntimeError:
-        check("discord import guard", True)
-else:
-    check("discord import guard", True, "discord.py present, skipped")
-
 # local server (OpenAI + Anthropic endpoints)
 from wormgpt import server as S  # noqa: E402
 

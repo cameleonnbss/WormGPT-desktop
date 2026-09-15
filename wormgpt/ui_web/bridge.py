@@ -71,7 +71,6 @@ class Bridge:
             "max_tokens": cfg["engine"].get("max_tokens", 1024),
             "image": dict(cfg.get("image", {})),
             "server": dict(cfg.get("server", {})),
-            "discord": dict(cfg.get("discord", {})),
             "tools": dict(cfg.get("tools", {})),
             "search": bool(cfg.get("search", {}).get("enabled")),
             "reasoning": bool(cfg.get("reasoning", {}).get("show", True)),
@@ -85,7 +84,6 @@ class Bridge:
             "engine": {"state": self.core.engine_state,
                        "text": self.core.engine_status},
             "server_running": bool(self.core.server and self.core.server.running),
-            "bot_running": bool(self.core.bot and self.core.bot.running),
             "recommended": SI.recommended_tier(),
         }
 
@@ -339,14 +337,6 @@ class Bridge:
                 self.core.stop_server()
             if srv.get("enabled"):
                 self.core.start_server()
-        if "discord" in updates:
-            disc = updates.pop("discord")
-            was = self.core.bot and self.core.bot.running
-            self.core.apply_settings({"discord": disc})
-            if was and not disc.get("enabled"):
-                self.core.stop_bot()
-            if disc.get("enabled"):
-                self.core.start_bot()
         if updates:
             self.core.apply_settings(updates)
         C.save(self.cfg)
@@ -357,13 +347,6 @@ class Bridge:
 
     def stop_server(self):
         self.core.stop_server()
-        return {"ok": True}
-
-    def start_bot(self):
-        return {"ok": self.core.start_bot()}
-
-    def stop_bot(self):
-        self.core.stop_bot()
         return {"ok": True}
 
     # -- remote providers ----------------------------------------------------
