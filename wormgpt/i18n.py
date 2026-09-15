@@ -182,6 +182,9 @@ EN = {
     "tools.mode": "Confirmation",
     "tools.mode_ask": "Ask before each command",
     "tools.mode_auto": "Auto-run (trusted machine)",
+    "tools.osint": "OSINT toolkit (passive recon)",
+    "tools.osint.d": "DNS, whois, subdomains, certificates, IP info, port scan, username/e-mail search — public sources only.",
+    "tools.osint": "OSINT toolkit (passive recon)",
     "tools.cwd": "Working directory",
     "tools.browse": "Browse…",
     "tools.note": ("Full agent mode, exactly like Claude Code: the model can "
@@ -539,6 +542,9 @@ FR = {
     "tools.mode": "Confirmation",
     "tools.mode_ask": "Demander avant chaque commande",
     "tools.mode_auto": "Exécution automatique (machine de confiance)",
+    "tools.osint": "Boîte à outils OSINT (reconnaissance passive)",
+    "tools.osint.d": "DNS, whois, sous-domaines, certificats, infos IP, scan de ports, recherche de pseudo/e-mail — sources publiques uniquement.",
+    "tools.osint.d": "DNS, whois, subdomains, certificates, IP info, port scan, username/e-mail search — public sources only.",
     "tools.cwd": "Dossier de travail",
     "tools.browse": "Parcourir…",
     "tools.note": ("Mode agent complet, exactement comme Claude Code : le "
@@ -890,6 +896,9 @@ ES = {
     "tools.mode": "Confirmación",
     "tools.mode_ask": "Preguntar antes de cada comando",
     "tools.mode_auto": "Ejecución automática (máquina de confianza)",
+    "tools.osint": "Kit OSINT (reconocimiento pasivo)",
+    "tools.osint.d": "DNS, whois, subdominios, certificados, info de IP, escaneo de puertos, búsqueda de usuario/correo — solo fuentes públicas.",
+    "tools.osint": "Boîte à outils OSINT (reconnaissance passive)",
     "tools.cwd": "Directorio de trabajo",
     "tools.browse": "Examinar…",
     "tools.note": ("Modo agente completo, exactamente como Claude Code: el "
@@ -1242,6 +1251,9 @@ DE = {
     "tools.mode": "Bestätigung",
     "tools.mode_ask": "Vor jedem Befehl fragen",
     "tools.mode_auto": "Automatisch ausführen (vertrauenswürdiger Rechner)",
+    "tools.osint": "OSINT-Werkzeuge (passive Aufklärung)",
+    "tools.osint.d": "DNS, Whois, Subdomains, Zertifikate, IP-Infos, Portscan, Nutzername-/E-Mail-Suche — nur öffentliche Quellen.",
+    "tools.osint.d": "DNS, whois, sous-domaines, certificats, infos IP, scan de ports, recherche de pseudo/e-mail — sources publiques uniquement.",
     "tools.cwd": "Arbeitsverzeichnis",
     "tools.browse": "Durchsuchen…",
     "tools.note": ("Voller Agent-Modus, genau wie Claude Code: Das Modell kann "

@@ -197,7 +197,8 @@ DEFAULTS = {
     "system_prompt_custom": False,
     "preset": "Security Professional",
     "server": {"enabled": False, "host": "127.0.0.1", "port": 1234},
-    "tools": {"enabled": False, "mode": "ask", "cwd": ""},
+    "tools": {"enabled": False, "mode": "ask", "cwd": "",
+              "osint": True},
     # API distantes compatibles OpenAI / Anthropic (facultatif, désactivé)
     "remote": {"active": ""},
     "providers": {

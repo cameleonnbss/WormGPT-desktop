@@ -5,9 +5,6 @@ installation, no account, no cloud. Everything runs on your machine.
 
 **Current version: v1.9** — see section 10 for the changelog.
 
-Includes **WormGPT_Keys.py**, the standalone activation-key generator
-(HMAC-SHA256 signed keys, fully offline — see section 11).
-
 ---
 
 ## 1. What this app is
@@ -38,7 +35,7 @@ No admin rights are needed at any point.
 1. Launch `WormGPT.exe`.
 2. First-run wizard: choose your **language**, enter **your name** and the
    **name of your AI**, pick a model tier recommended for your hardware, choose
-   a personality preset, and accept the liability notice.
+   a personality preset.
 3. Open the **Models** page and download a tier (from ~400 MB to ~36 GB — start
    with a light one; they run on any machine). A red progress bar shows the
    speed; the model activates itself when the download completes.
@@ -66,6 +63,7 @@ wormgpt/
   server.py             — OpenAI/Anthropic-compatible local API server
   runner.py             — local command execution (agent mode)
   filesys.py            — file read/write/edit/glob/grep tools for the agent
+  osint.py              — passive OSINT toolkit (public sources only)
   osint.py              — passive OSINT toolkit (public sources only)
   search.py             — web search for the model
   remote.py             — OpenAI / Anthropic / custom API providers
@@ -147,7 +145,7 @@ size is verified before it is installed.
   Stable Diffusion WebUI; optional negative prompt, steps and CFG.
 - **Web search** — DuckDuckGo / Wikipedia results fed back into the model.
 - **Agent mode (Local Commands)** — the model can read, write and edit files,
-  list/glob/grep folders and run shell commands, chaining
+  list/glob/grep folders, run shell commands and do passive OSINT, chaining
   tools until the task is done. "Ask" mode shows every command for approval;
   "Auto" runs without asking. Off by default.
 - **Local API server** — OpenAI- and Anthropic-compatible on `127.0.0.1`.
@@ -205,6 +203,9 @@ hard-coded token anywhere in this repository.
 
 ## 10. Changelog (recent)
 
+- **v1.10.0** — the setup wizard no longer shows the liability notice and its
+  accept checkbox: the first screen is language only and **Continue** is live
+  immediately.
 - **v1.9.0** — private v1.9 release of WormGPT-desktop.
 - **v1.19.0** — clicking a free cloud model card now routes the chat correctly
   (both remote sources are checked); "no model installed" fixed for API-only use.
@@ -224,30 +225,7 @@ hard-coded token anywhere in this repository.
 
 ---
 
-## 11. Activation keys (WormGPT_Keys.py)
-
-`WormGPT_Keys.py` at the repo root generates the app's activation keys. It is
-standalone (Python 3.8+, no dependencies) and works fully offline:
-
-```bat
-:: interactive
-python WormGPT_Keys.py
-
-:: command line — 3 keys valid 365 days for "Alice"
-python WormGPT_Keys.py --name "Alice" --days 365 --count 3
-
-:: check an existing key
-python WormGPT_Keys.py --check WGPT-XXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX
-```
-
-Keys look like `WGPT-XXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX`: an HMAC-SHA256
-signature plus a base32 payload carrying the owner name and expiry date.
-Validation is offline (signature + expiry). Generated keys are also written
-to `keys.txt` next to the script.
-
----
-
-## 12. Français (résumé)
+## 11. Français (résumé)
 
 **WormGPT Desktop** est une application Windows qui fait tourner des **modèles
 d'IA en local**, hors ligne, sans compte ni cloud, avec une interface sombre
@@ -259,9 +237,6 @@ qui exécute des commandes locales, et 4 langues d'interface.
 **Aucune donnée ne quitte votre machine** : pas de télémétrie, pas de jeton
 caché dans le code. Le réseau ne sert qu'au téléchargement des modèles, à la
 recherche web et aux API que vous configurez vous-même.
-
-`WormGPT_Keys.py` (à la racine) génère les clés d'activation de l'application
-— signature HMAC-SHA256, validation hors ligne, aucune dépendance.
 
 **Démarrage** : lancer `WormGPT.exe`, suivre l'assistant (langue, votre nom,
 nom de l'IA, modèle), puis télécharger un modèle dans l'onglet *Modèles* et

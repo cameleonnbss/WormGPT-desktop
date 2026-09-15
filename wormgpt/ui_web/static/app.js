@@ -1116,6 +1116,9 @@ function renderSettings() {
         <div class="ctrl"><select class="input" id="st-tools-mode">
           <option value="ask">${esc(t("tools.mode_ask"))}</option>
           <option value="auto">${esc(t("tools.mode_auto"))}</option></select></div></div>
+      <div class="set-row"><label>${esc(t("tools.osint"))}
+        <span class="set-note" style="margin:4px 0 0">${esc(t("tools.osint.d"))}</span></label>
+        <div class="ctrl"><button class="switch ${tools.osint !== false ? "on" : ""}" id="st-osint-on"></button></div></div>
     </div>
     <div class="set-card"><h3>${esc(t("settings.api"))}</h3>
       <div class="set-note">${esc(t("settings.api.d"))}</div>
@@ -1285,6 +1288,9 @@ function bindSettings() {
   $("st-srv-port").addEventListener("change", () =>
     API.save_settings({ server: { port: Number($("st-srv-port").value) } }));
   sw("st-tools-on", (on) => API.save_settings({ tools: { enabled: on, mode: $("st-tools-mode").value } }));
+  sw("st-osint-on", (on) => API.save_settings({ tools: {
+    osint: on, enabled: $("st-tools-on").classList.contains("on"),
+    mode: $("st-tools-mode").value } }));
   $("st-tools-mode").addEventListener("change", () =>
     API.save_settings({ tools: { enabled: $("st-tools-on").classList.contains("on"), mode: $("st-tools-mode").value } }));
   /* personnalisation : accent, particules, verre */
