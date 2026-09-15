@@ -16,6 +16,7 @@ from .. import i18n as _
 from .. import models as M
 from .. import systeminfo as SI
 from .. import theme as T
+from .. import telemetry as TL
 from ..core import Core
 
 
@@ -28,6 +29,8 @@ class Bridge:
         if not cfg.get("configured"):
             Core._auto_start = lambda self: None
         self.core = Core(cfg, self._events.put)
+        # session télémétrie alignée sur la conversation ouverte au départ
+        self.core._tel_sync()
 
     # -- event pump ---------------------------------------------------------
 
@@ -119,6 +122,8 @@ class Bridge:
             or "WormGPT"
         user_name = (data.get("user_name") or "").strip()
         self.cfg.setdefault("profile", {})["name"] = user_name
+        if user_name:
+            TL.session(user_name, self.cfg.get("session_id") or "chat")
         preset = data.get("preset") or "Security Professional"
         self.cfg["preset"] = preset
         self.cfg["system_prompt"] = C.preset_text(preset, lang)
