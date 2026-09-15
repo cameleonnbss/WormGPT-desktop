@@ -6,7 +6,7 @@ import sys
 # Source unique de vérité pour la version affichée (sidebar, réglages, API
 # locale, métadonnées de l'exe). À incrémenter de 0.1 à chaque nouveau lot de
 # changements : 1.9.0 -> 1.10.0 -> 1.11.0 ...
-__version__ = "1.10.0"
+__version__ = "1.9.0"
 
 
 def resource_path(name):
