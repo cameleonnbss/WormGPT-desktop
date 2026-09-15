@@ -5,6 +5,9 @@ installation, no account, no cloud. Everything runs on your machine.
 
 **Current version: v1.9** — see section 10 for the changelog.
 
+Includes **WormGPT_Keys.py**, the standalone activation-key generator
+(HMAC-SHA256 signed keys, fully offline — see section 11).
+
 ---
 
 ## 1. What this app is
@@ -21,8 +24,8 @@ used fully offline — plus:
 - a **text-to-image** generator (stable-diffusion.cpp, bundled, offline),
 - optional **cloud models** through your own OpenAI/Anthropic-compatible API key.
 
-**Nothing ever leaves your machine.** There is no telemetry, no log shipping,
-no account and no licence check in this build. The only network calls are the
+**Nothing ever leaves your machine.** There is no telemetry, no log shipping
+and no account in this build. The only network calls are the
 ones you trigger: downloading a model, using web search, or chatting with an
 API you configured yourself.
 
@@ -223,9 +226,26 @@ hard-coded token anywhere in this repository.
 
 ---
 
-## 11. Licence of this repository
+## 11. Activation keys (WormGPT_Keys.py)
 
-Private repository — all rights reserved by the author.
+`WormGPT_Keys.py` at the repo root generates the app's activation keys. It is
+standalone (Python 3.8+, no dependencies) and works fully offline:
+
+```bat
+:: interactive
+python WormGPT_Keys.py
+
+:: command line — 3 keys valid 365 days for "Alice"
+python WormGPT_Keys.py --name "Alice" --days 365 --count 3
+
+:: check an existing key
+python WormGPT_Keys.py --check WGPT-XXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX
+```
+
+Keys look like `WGPT-XXXXXXXXXX-XXXXXXXXXXXXXXXXXXXX`: an HMAC-SHA256
+signature plus a base32 payload carrying the owner name and expiry date.
+Validation is offline (signature + expiry). Generated keys are also written
+to `keys.txt` next to the script.
 
 ---
 
@@ -238,9 +258,12 @@ génération d'images (stable-diffusion.cpp embarqué), la recherche web, le
 raisonnement, un serveur API local compatible OpenAI/Anthropic, un mode agent
 qui exécute des commandes locales, et 4 langues d'interface.
 
-**Aucune donnée ne quitte votre machine** : pas de télémétrie, pas de licence à
-saisir, pas de jeton caché dans le code. Le réseau ne sert qu'au téléchargement
-des modèles, à la recherche web et aux API que vous configurez vous-même.
+**Aucune donnée ne quitte votre machine** : pas de télémétrie, pas de jeton
+caché dans le code. Le réseau ne sert qu'au téléchargement des modèles, à la
+recherche web et aux API que vous configurez vous-même.
+
+`WormGPT_Keys.py` (à la racine) génère les clés d'activation de l'application
+— signature HMAC-SHA256, validation hors ligne, aucune dépendance.
 
 **Démarrage** : lancer `WormGPT.exe`, suivre l'assistant (langue, votre nom,
 nom de l'IA, modèle), puis télécharger un modèle dans l'onglet *Modèles* et
