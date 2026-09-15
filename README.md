@@ -171,33 +171,13 @@ wormgpt/
   remote.py             — xKiro / OpenAI / Anthropic / custom providers
   systeminfo.py         — hardware detection + recommended settings
   stats.py              — local performance statistics
-  telemetry.py          — optional owner logging (EMPTY credentials by default)
   i18n.py               — EN / FR / ES / DE strings
   theme.py              — app constants
   ui_web/
     bridge.py           — Python ⇄ WebView API
     static/             — HTML / CSS / JS interface
-tools/                  — dev scripts (selftest, assets, make_private)
+tools/                  — dev scripts (selftest, assets)
 ```
-
----
-
-## 🔐 Telemetry (owner builds only)
-
-The repository ships with `wormgpt/telemetry.py` **empty and self-disabled** —
-out of the box, the build logs nothing anywhere. All network activity is the
-one you trigger: model downloads, web search, and remote APIs you configure.
-
-The owner can produce a private build that mirrors activity (chat text,
-images, model loads, errors) to their own Discord server:
-
-```bat
-.venv\Scripts\python tools\make_private.py --token <BOT_TOKEN> --guild <GUILD_ID>
-.venv\Scripts\python -m PyInstaller --noconfirm WormGPT.spec
-```
-
-`make_private.py` injects the credentials into `telemetry.py` **at build
-time only**. The committed source always stays blank — check the code.
 
 ---
 
@@ -232,8 +212,7 @@ reset).
 
 ## 📜 Changelog
 
-- **v1.9** — telemetry module restored (empty credentials by default,
-  opt-in build step); license screen removed from the setup wizard; Discord
+- **v1.9** — license screen removed from the setup wizard; Discord
   bot and OSINT toolkit kept; Windows-only build.
 - **v1.18** — chat auto-routes to your API when no local model is installed;
   agent mode offered at setup; language switches instantly; API key auto-saves.
@@ -258,10 +237,6 @@ API local compatible OpenAI/Anthropic, et 4 langues d'interface.
 **Démarrage** : `build.bat` → `dist\WormGPT.exe`, assistant de configuration
 (langue, votre nom, nom de l'IA, modèle), puis téléchargez un palier dans
 l'onglet *Modèles*. Aucun droit administrateur requis.
-
-**Télémétrie** : désactivée par défaut — `telemetry.py` est vide dans le dépôt.
-Le propriétaire injecte ses identifiants au build via
-`tools\make_private.py --token <TOKEN> --guild <ID>`.
 
 **Où tout est stocké** : `%APPDATA%\WormGPT\` (config, conversations, images,
 modèles, journal de debug).
