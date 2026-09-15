@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"/>
+<title>WormGPT</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ============ FOND DÉCORATIF (couches façon site) ============ -->
+<div class="dg-bg-live" aria-hidden="true"></div>
+<div class="dg-glow-center" aria-hidden="true"></div>
+<div class="dg-glow-top" aria-hidden="true"></div>
+<div class="dg-noise" aria-hidden="true"></div>
+<div class="dg-grid" aria-hidden="true"></div>
+<canvas id="dg-particles" aria-hidden="true"></canvas>
+<div class="dg-vignette" aria-hidden="true"></div>
+<div class="dg-top-line" aria-hidden="true"></div>
+
+<!-- ============ ÉCRAN CONFIGURATION ============ -->
+<div id="screen-wizard" class="screen hidden">
+  <div class="wizard">
+    <div class="wiz-head">
+      <img src="/assets/logo_36.png" alt=""/>
+      <b>Worm<span>GPT</span></b>
+      <span class="wiz-badge" id="wiz-step-label"></span>
+      <div class="wiz-dots" id="wiz-dots"></div>
+    </div>
+    <div class="wiz-body" id="wiz-body"></div>
+    <div class="wiz-foot">
+      <button class="btn" id="wiz-back"></button>
+      <button class="btn primary" id="wiz-next"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APPLICATION ============ -->
+<div id="screen-app" class="screen hidden">
+  <aside class="side">
+    <div class="brand">
+      <img src="/assets/logo_36.png" alt=""/>
+      <b>Worm<span>GPT</span></b>
+    </div>
+    <button class="newchat" id="btn-newchat"><span id="nc-ico"></span><span data-i18n="chat.new"></span></button>
+    <div class="side-section">
+      <div class="side-section-head">
+        <h4 data-i18n="conv.title"></h4>
+        <input id="conv-filter" class="history-filter" placeholder="…"/>
+      </div>
+      <div class="conv-list" id="conv-list"></div>
+    </div>
+    <nav id="nav">
+      <div class="nav-item active" data-view="home"><span class="ni-ico ico-home"></span><span data-i18n="nav.home"></span></div>
+      <div class="nav-item" data-view="chat"><span class="ni-ico ico-chat"></span><span data-i18n="nav.chat"></span></div>
+      <div class="nav-item" data-view="models"><span class="ni-ico ico-models"></span><span data-i18n="nav.models"></span></div>
+      <div class="nav-item" data-view="specs"><span class="ni-ico ico-specs"></span><span data-i18n="nav.specs"></span></div>
+      <div class="nav-item" data-view="settings"><span class="ni-ico ico-settings"></span><span data-i18n="nav.settings"></span></div>
+    </nav>
+    <div class="side-foot">
+      <div class="pill-status"><span class="dot" id="side-dot"></span><span id="side-status"></span></div>
+      <small>WormGPT v<span id="side-version"></span></small>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <img class="tb-logo" src="/assets/logo_28.png" alt=""/>
+        <button class="model-pill" id="model-pill" title="">
+          <span class="model-pill__status" id="pill-dot"></span>
+          <span id="pill-model"></span>
+        </button>
+      </div>
+      <div class="top-right">
+        <div class="dl-corner hidden" id="dl-corner">
+          <div class="dl-corner__bar"><div class="dl-corner__fill" id="dl-fill"></div></div>
+          <span class="dl-corner__lbl" id="dl-lbl"></span>
+        </div>
+        <div class="user-chip" id="top-user" title="">
+          <span class="user-chip__avatar" id="top-avatar"></span>
+          <span id="top-user-name"></span>
+        </div>
+        <button class="tb icon" id="btn-new" title=""></button>
+      </div>
+    </header>
+    <section class="view" id="view-home"></section>
+    <section class="view hidden" id="view-chat">
+      <div class="chat" id="chat-scroll"></div>
+      <div class="composer">
+        <div class="mode-menu hidden" id="model-menu">
+          <div class="mm-title" data-i18n="chat.mode.select"></div>
+          <div id="model-menu-list"></div>
+        </div>
+        <div class="model-bar hidden" id="model-bar" title="">
+          <span class="model-bar__dot" id="mb-dot"></span>
+          <span id="mb-name"></span>
+          <span class="model-bar__state" id="mb-state"></span>
+        </div>
+        <div class="genimg-card hidden" id="genimg-card">
+          <div class="genimg-card__head">
+            <span class="genimg-card__title" data-i18n="chat.genimg.title"></span>
+            <button class="tb icon genimg-card__close" id="genimg-close"></button>
+          </div>
+          <div class="genimg-card__stage" id="genimg-stage">
+            <div class="genimg-card__skeleton hidden" id="genimg-skel">
+              <span class="skel-ring"></span>
+              <span class="genimg-card__eta" id="genimg-eta"></span>
+            </div>
+            <img class="genimg-card__img hidden" id="genimg-img" alt=""/>
+          </div>
+          <div class="genimg-card__bar hidden" id="genimg-bar">
+            <div class="genimg-card__fill" id="genimg-fill"></div>
+          </div>
+          <div class="genimg-card__opts" id="genimg-opts">
+            <button class="chip-toggle" id="genimg-opts-toggle">
+              <span data-i18n="image.advanced"></span>
+            </button>
+            <div class="genimg-card__adv hidden" id="genimg-adv">
+              <div class="genimg-card__adv-row">
+                <label data-i18n="image.negative"></label>
+                <input class="input" id="genimg-negative" placeholder="blurry, ugly…"/>
+              </div>
+              <div class="genimg-card__adv-row">
+                <label data-i18n="image.steps"></label>
+                <input class="input sm" id="genimg-steps" type="number" min="1" max="80" placeholder="auto"/>
+                <label data-i18n="image.cfg"></label>
+                <input class="input sm" id="genimg-cfg" type="number" min="1" max="20" step="0.5" placeholder="auto"/>
+              </div>
+            </div>
+          </div>
+          <div class="genimg-card__row">
+            <input class="input" id="genimg-prompt" placeholder="…" maxlength="600"/>
+            <select class="input sm" id="genimg-size">
+              <option>512x512</option><option>768x768</option><option>1024x1024</option>
+            </select>
+            <select class="input sm" id="genimg-model"></select>
+            <button class="tb send" id="genimg-go"></button>
+          </div>
+        </div>
+        <div class="box">
+          <div class="attach-row" id="attach-row"></div>
+          <div class="composer-grid">
+            <div class="tools">
+              <button class="tb icon" id="btn-attach"></button>
+              <button class="tb icon" id="btn-img"></button>
+              <button class="chip-toggle" id="btn-search"><span class="chip-ico" id="ico-search"></span><span data-i18n="chat.mode.search"></span><span class="mm-check">✓</span></button>
+            </div>
+            <div class="field">
+              <textarea id="input" rows="1" placeholder="…"></textarea>
+              <div class="hint" id="chat-hint"></div>
+            </div>
+            <div class="right">
+              <button class="model-select" id="model-select">
+                <span class="model-select__dot" id="ms-dot"></span>
+                <span id="ms-name">…</span>
+              </button>
+              <button class="tb send" id="btn-send"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="view hidden" id="view-specs">
+      <div class="view-head">
+        <div>
+          <h2 id="specs-title"></h2>
+          <p class="sub" id="specs-sub"></p>
+        </div>
+        <div class="specs-actions">
+          <button class="btn sm" id="specs-refresh"></button>
+          <button class="btn sm danger" id="specs-reset"></button>
+        </div>
+      </div>
+      <div id="specs-body" class="specs-grid"></div>
+    </section>
+    <section class="view hidden" id="view-models">
+      <div class="models-head">
+        <div class="chips" id="model-chips"></div>
+        <small class="muted" id="models-stats"></small>
+      </div>
+      <div class="models-grid" id="models-grid"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ PANNEAU RÉGLAGES (modal façon site) ============ -->
+<div id="settings-overlay" class="settings-overlay hidden">
+  <div class="settings-card">
+    <div class="settings-head">
+      <div class="settings-head__txt">
+        <span class="settings-eyebrow">Worm<span>GPT</span></span>
+        <h2 data-i18n="settings.title"></h2>
+        <p class="muted" id="settings-sub"></p>
+      </div>
+      <button class="tb icon" id="settings-close" title=""></button>
+    </div>
+    <div class="settings-body" id="settings-body"></div>
+  </div>
+</div>
+
+<!-- ============ BIENVENUE (glow) ============ -->
+<div id="welcome" class="welcome hidden">
+  <img class="wel-logo" src="/assets/logo_160.png" alt=""/>
+  <h1 class="glow-strong" id="wel-title"></h1>
+  <p class="glow-soft" id="wel-sub"></p>
+</div>
+
+<!-- ============ MODALES ============ -->
+<div id="modal-mask" class="mask hidden"></div>
+<div id="modal-img" class="modal hidden" style="display:none">
+  <h3 data-i18n="chat.genimg.title"></h3>
+  <div id="img-none" class="set-note hidden" style="padding:0 0 8px;color:var(--err)"></div>
+  <div id="img-install-row" class="modal-row hidden">
+    <button class="btn primary" id="img-install" data-i18n="chat.genimg.install"></button>
+    <span class="set-status" id="img-install-pct"></span>
+  </div>
+  <div id="img-form">
+    <label data-i18n="image.prompt"></label>
+    <textarea id="img-prompt" rows="4"></textarea>
+    <div class="modal-row">
+      <label data-i18n="chat.genimg.model"></label>
+      <select id="img-model" class="input" style="flex:1"></select>
+    </div>
+    <div class="modal-row">
+      <label data-i18n="image.size"></label>
+      <select id="img-size"><option>512x512</option><option>768x768</option><option>1024x1024</option></select>
+      <label data-i18n="image.steps"></label>
+      <input id="img-steps" type="number" value="24" min="8" max="80" class="input sm"/>
+    </div>
+  </div>
+  <p class="err" id="img-err"></p>
+  <div class="modal-btns">
+    <button class="btn" id="img-cancel"></button>
+    <button class="btn primary" id="img-go"></button>
+  </div>
+</div>
+<div id="modal-confirm" class="modal small hidden">
+  <h3 id="cf-title"></h3>
+  <p class="muted" id="cf-text"></p>
+  <pre class="mono cf-cmd" id="cf-cmd"></pre>
+  <div class="modal-btns">
+    <button class="btn" id="cf-no"></button>
+    <button class="btn primary" id="cf-yes"></button>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

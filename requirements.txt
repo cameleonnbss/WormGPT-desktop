@@ -1,0 +1,5 @@
+# llama-cpp-python has no Windows wheel on PyPI — install the official
+# GitHub release wheel (py3-none = any Python 3.x on win_amd64).
+llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.35/llama_cpp_python-0.3.35-py3-none-win_amd64.whl
+discord.py>=2.4
+pywebview>=5.0

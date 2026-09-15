@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Build output
+build/
+dist/
+
+# Local registries / scratch
+*.part
+*.log
+
+# Dev harness
+preview-web/
+.freebuff/
