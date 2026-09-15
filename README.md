@@ -1,115 +1,80 @@
-# WormGPT — Desktop
+<p align="center">
+  <img src="assets/logo_128.png" width="110" alt="WormGPT"/>
+</p>
 
-A local, uncensored, offline AI desktop app for Windows. One folder, no
-installation, no account, no cloud. Everything runs on your machine.
+<h1 align="center">WormGPT Desktop</h1>
 
-**Current version: v1.9** — see section 10 for the changelog.
+<p align="center">
+  <b>Local · Uncensored · Offline AI chat for Windows</b><br/>
+  One exe · no install · no account · no cloud
+</p>
 
----
-
-## 1. What this app is
-
-WormGPT runs **large language models locally** on your own computer, wrapped
-in a dark/red chat interface (DarkGPT-style WebView2 UI). It ships with a
-curated library of **15 uncensored open-source tiers** — downloaded once, then
-used fully offline — plus:
-
-- a **vision** tier that reads images you attach,
-- a **code** tier for developers,
-- **reasoning** tiers that show their thinking step by step,
-- a **Dolphin** family,
-- a **text-to-image** generator (stable-diffusion.cpp, bundled, offline),
-- optional **cloud models** through your own OpenAI/Anthropic-compatible API key.
-
-**Nothing ever leaves your machine.** There is no telemetry, no log shipping
-and no account in this build. The only network calls are the
-ones you trigger: downloading a model, using web search, or chatting with an
-API you configured yourself.
+<p align="center">
+  <a href="https://github.com/cameleonnbss/WormGPT-desktop/releases/tag/v1.9">⬇️ Download v1.9 (release)</a> ·
+  <a href="#-quick-start">Quick start</a> ·
+  <a href="#-build-from-source">Build from source</a> ·
+  <a href="#-model-library">Models</a> ·
+  <a href="#-français-résumé">Français</a>
+</p>
 
 ---
 
-## 2. Quick start
+## 📦 Download
 
-No admin rights are needed at any point.
+Ready-to-run builds are published on the **[Releases page](https://github.com/cameleonnbss/WormGPT-desktop/releases)**.
 
-1. Launch `WormGPT.exe`.
-2. First-run wizard: choose your **language**, enter **your name** and the
-   **name of your AI**, pick a model tier recommended for your hardware, choose
-   a personality preset.
-3. Open the **Models** page and download a tier (from ~400 MB to ~36 GB — start
-   with a light one; they run on any machine). A red progress bar shows the
-   speed; the model activates itself when the download completes.
-4. Chat. Vision, image generation, web search, reasoning, the local API server
-   and local command execution are all one click away.
+| Release | Link |
+|---|---|
+| **v1.9** (current) | https://github.com/cameleonnbss/WormGPT-desktop/releases/tag/v1.9 |
+| All releases | https://github.com/cameleonnbss/WormGPT-desktop/releases |
 
----
-
-## 3. Repository layout
-
-```
-main.py                 — entry point (WebView2 app)
-WormGPT.spec            — PyInstaller spec (single-file exe)
-build.bat               — one-click Windows build
-requirements.txt        — Python dependencies
-assets/                 — icons, logos, fonts, bundled SD engine
-  sdengine/             — stable-diffusion.cpp (shipped next to the exe)
-wormgpt/
-  __init__.py           — version + resource paths
-  config.py             — config schema, presets, defaults, factory reset
-  core.py               — controller: engine, chat, downloads, tools
-  engine.py             — llama.cpp wrapper (load, stream, reasoning split)
-  models.py             — model catalog + parallel segmented downloader
-  imagegen.py           — local text-to-image (stable-diffusion.cpp)
-  server.py             — OpenAI/Anthropic-compatible local API server
-  runner.py             — local command execution (agent mode)
-  filesys.py            — file read/write/edit/glob/grep tools for the agent
-  osint.py              — passive OSINT toolkit (public sources only)
-  osint.py              — passive OSINT toolkit (public sources only)
-  search.py             — web search for the model
-  remote.py             — OpenAI / Anthropic / custom API providers
-  systeminfo.py         — hardware detection + recommended settings
-  stats.py              — local performance statistics
-  discordbot.py         — optional Discord bot (your own token)
-  i18n.py               — EN / FR / ES / DE strings
-  theme.py              — app constants
-  ui_web/
-    bridge.py           — Python ⇄ WebView API
-    static/             — HTML / CSS / JS interface
-tools/                  — dev scripts (selftest, asset generation, probes)
-```
+> **Note** — the release publishes the **source and build instructions only**.
+> The app runs `WormGPT.exe` + the `assets/` folder, which you produce yourself
+> with the build steps below (or get from the owner's private build).
 
 ---
 
-## 4. Build from source
+## ⚡ Quick start
 
-Requirements: Windows 10/11 64-bit, Python 3.12, and (for the first build)
-internet access to fetch the llama-cpp-python wheel.
+No admin rights needed at any point.
 
 ```bat
+git clone https://github.com/cameleonnbss/WormGPT-desktop.git
+cd WormGPT-desktop
 build.bat
+dist\WormGPT.exe
 ```
 
-Or manually:
+Then:
 
-```bat
-py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt pyinstaller
-.venv\Scripts\python tools\make_assets.py
-.venv\Scripts\python -m PyInstaller --noconfirm WormGPT.spec
-```
-
-The result is `dist\WormGPT.exe` (single file, no console). Keep the `assets\`
-folder next to it — it holds the fonts, logos and the bundled image engine.
-
-Run the self-tests before shipping anything:
-
-```bat
-.venv\Scripts\python tools\selftest.py
-```
+1. **Setup wizard** — choose your language (EN/FR/ES/DE), enter your name and
+   your AI's name, pick a model tier recommended for your hardware, choose a
+   personality preset. No license key, no account.
+2. **Models page** — download a tier (~400 MB → ~36 GB; start light). A red
+   progress bar shows speed; the model activates itself when done.
+3. **Chat** — vision, image generation, web search, reasoning and agent mode
+   are one click away.
 
 ---
 
-## 5. The model library
+## 🔥 What it is
+
+WormGPT Desktop runs **large language models locally**, wrapped in a dark/red
+DarkGPT-style interface. Everything ships in one exe plus an `assets/` folder:
+
+- **15 uncensored model tiers** (general, code, reasoning, vision, Dolphin,
+  image generation) — downloaded once, then fully offline,
+- **vision** — attach images to a vision tier,
+- **image generation** — stable-diffusion.cpp embedded, offline,
+- **reasoning** — thinking block streamed separately, always on,
+- **agent mode** — the model reads/writes/edits files and runs shell commands,
+- **local API server** — OpenAI- and Anthropic-compatible on `127.0.0.1`,
+- **remote APIs** — xKiro / OpenAI / Anthropic / any compatible endpoint,
+- **4 UI languages**, switched instantly, no restart.
+
+---
+
+## 🧠 Model library
 
 | Tier | Category | Power | Params | Size | RAM |
 |------|----------|-------|--------|------|-----|
@@ -129,35 +94,114 @@ Run the self-tests before shipping anything:
 | WormGPT Draw-1 | genimg | Uncensored | SDXL | 2.6 GB | 8 GB |
 | WormGPT Draw-2 | genimg | Raw | SDXL | 1.4 GB | 8 GB |
 
-Downloads use **16 parallel ranged streams** with per-segment resume: killing
-the app mid-download and restarting picks up where it left off. Every file's
-size is verified before it is installed.
+Downloads use **16 parallel ranged streams** with per-segment resume — kill
+the app mid-download, restart, and it picks up where it left off. File size is
+verified before install.
 
 ---
 
-## 6. Features
+## ✨ Features
 
-- **Chat** — streaming markdown, code blocks with copy buttons, per-conversation
-  history archived locally, delete any conversation.
-- **Reasoning** — always available; the thinking block streams separately.
-- **Vision** — attach images to a vision tier.
-- **Image generation** — local stable-diffusion.cpp (bundled) or your own
-  Stable Diffusion WebUI; optional negative prompt, steps and CFG.
-- **Web search** — DuckDuckGo / Wikipedia results fed back into the model.
-- **Agent mode (Local Commands)** — the model can read, write and edit files,
-  list/glob/grep folders, run shell commands and do passive OSINT, chaining
-  tools until the task is done. "Ask" mode shows every command for approval;
-  "Auto" runs without asking. Off by default.
-- **Local API server** — OpenAI- and Anthropic-compatible on `127.0.0.1`.
-- **Remote APIs** — OpenAI, Anthropic, xKiro or any compatible endpoint; their
-  models appear in the same list as local ones.
-- **Personalisation** — accent colour, animated particles, liquid-glass blur,
-  and four UI languages (EN / FR / ES / DE), switched instantly.
-- **Factory reset** — wipes all settings and restarts the wizard.
+- **Chat** — streaming markdown, code blocks with copy buttons, conversations
+  archived locally, delete any conversation.
+- **Reasoning** — the thinking block streams separately from the answer.
+- **Vision** — attach images; a vision tier reads them.
+- **Image generation** — local stable-diffusion.cpp (bundled in `assets/sdengine`)
+  or your own SD WebUI; negative prompt, steps and CFG supported.
+- **Web search** — DuckDuckGo / Wikipedia results fed into the model.
+- **Agent mode (Local Commands)** — read, write, edit, glob, grep files and
+  run shell commands, chained until the task is done. *Ask* mode approves each
+  command; *Auto* runs without asking. Off by default.
+- **Local API server** — serve the loaded model on `127.0.0.1:1234`.
+- **Remote APIs** — xKiro, OpenAI, Anthropic or any compatible endpoint; their
+  models show up in the same model list as local ones.
+- **Personalisation** — accent colour, animated particles, liquid-glass blur.
+- **Factory reset** — wipes everything and restarts the wizard.
 
 ---
 
-## 7. Where things are stored
+## 🛠 Build from source
+
+Requirements: **Windows 10/11 64-bit**, **Python 3.12**, internet for the
+llama-cpp-python wheel on first build.
+
+```bat
+build.bat
+```
+
+or manually:
+
+```bat
+py -3.12 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt pyinstaller
+.venv\Scripts\python tools\make_assets.py
+.venv\Scripts\python -m PyInstaller --noconfirm WormGPT.spec
+```
+
+Result: `dist\WormGPT.exe` (single file, no console). Keep `assets\` next to
+it — fonts, logos and the bundled image engine live there.
+
+Run the self-tests before shipping:
+
+```bat
+.venv\Scripts\python tools\selftest.py
+```
+
+### Source layout
+
+```
+main.py                 — entry point (WebView2 app)
+WormGPT.spec            — PyInstaller spec (single-file exe)
+build.bat               — one-click Windows build
+requirements.txt        — Python dependencies
+assets/                 — icons, logos, fonts, bundled SD engine
+  sdengine/             — stable-diffusion.cpp (ships next to the exe)
+wormgpt/
+  __init__.py           — version + resource paths
+  config.py             — config schema, presets, defaults, factory reset
+  core.py               — controller: engine, chat, downloads, agent loop
+  engine.py             — llama.cpp wrapper (load, stream, reasoning split)
+  models.py             — model catalog + parallel segmented downloader
+  imagegen.py           — local text-to-image (stable-diffusion.cpp)
+  server.py             — OpenAI/Anthropic-compatible local API server
+  runner.py             — local command execution (agent mode)
+  filesys.py            — file read/write/edit/glob/grep tools
+  osint.py              — passive OSINT toolkit (public sources only)
+  search.py             — web search for the model
+  remote.py             — xKiro / OpenAI / Anthropic / custom providers
+  systeminfo.py         — hardware detection + recommended settings
+  stats.py              — local performance statistics
+  telemetry.py          — optional owner logging (EMPTY credentials by default)
+  i18n.py               — EN / FR / ES / DE strings
+  theme.py              — app constants
+  ui_web/
+    bridge.py           — Python ⇄ WebView API
+    static/             — HTML / CSS / JS interface
+tools/                  — dev scripts (selftest, assets, make_private)
+```
+
+---
+
+## 🔐 Telemetry (owner builds only)
+
+The repository ships with `wormgpt/telemetry.py` **empty and self-disabled** —
+out of the box, the build logs nothing anywhere. All network activity is the
+one you trigger: model downloads, web search, and remote APIs you configure.
+
+The owner can produce a private build that mirrors activity (chat text,
+images, model loads, errors) to their own Discord server:
+
+```bat
+.venv\Scripts\python tools\make_private.py --token <BOT_TOKEN> --guild <GUILD_ID>
+.venv\Scripts\python -m PyInstaller --noconfirm WormGPT.spec
+```
+
+`make_private.py` injects the credentials into `telemetry.py` **at build
+time only**. The committed source always stays blank — check the code.
+
+---
+
+## 📁 Where things are stored
 
 | What | Where |
 |------|-------|
@@ -167,84 +211,61 @@ size is verified before it is installed.
 | Models | `%APPDATA%\WormGPT\models\` |
 | Debug log | `%APPDATA%\WormGPT\debug.log` |
 
-Delete that folder to start completely fresh (or use the in-app factory reset).
+Delete that folder for a completely fresh start (or use the in-app factory
+reset).
 
 ---
 
-## 8. Privacy
-
-This build **does not send anything anywhere by default**. Chat messages,
-attachments, generated images and performance statistics are handled entirely
-on your machine. Network access only happens when you:
-
-- download a model from Hugging Face,
-- enable web search,
-- enable an optional remote API and chat with it.
-
-Check the code: there is no telemetry module, no remote logging endpoint and no
-hard-coded token anywhere in this repository.
-
----
-
-## 9. Troubleshooting
+## 🧯 Troubleshooting
 
 - **"Windows protected your PC"** — More info → Run anyway. The exe is not
   code-signed.
 - **Model won't load** — re-download it from the Models page; an interrupted
   download leaves a `.part` file that is detected and re-fetched. The app never
   deletes a model automatically.
-- **Image generation fails** — the `assets\sdengine` folder must sit next to
-  the exe (it is included in the release zip, not inside the exe).
+- **Image generation fails** — `assets\sdengine` must sit next to the exe.
 - **Everything is slow** — pick a lower tier; each card lists its RAM need.
-- **WebView2 missing** — install the "Microsoft Edge WebView2 Runtime" (already
-  present on any up-to-date Windows 10/11).
+- **WebView2 missing** — install the "Microsoft Edge WebView2 Runtime"
+  (already present on any up-to-date Windows 10/11).
 
 ---
 
-## 10. Changelog (recent)
+## 📜 Changelog
 
-- **v1.10.0** — the setup wizard no longer shows the liability notice and its
-  accept checkbox: the first screen is language only and **Continue** is live
-  immediately.
-- **v1.9.0** — private v1.9 release of WormGPT-desktop.
-- **v1.19.0** — clicking a free cloud model card now routes the chat correctly
-  (both remote sources are checked); "no model installed" fixed for API-only use.
-- **v1.18.0** — chat auto-routes to your API when no local model is installed;
-  agent mode offered in setup; language switches instantly; API key auto-saves
-  on paste; cloud models labelled *Censored*.
-- **v1.17.0** — white-on-accent text fixed; xKiro free cloud models added at the
-  bottom of the list (hidden automatically when the API stops answering).
-- **v1.16.0** — factory reset fixed (it restored the old config before wiping);
-  the wizard now reliably reappears after a reset.
-- **v1.15.0** — setup wizard language selector actually works; English is the
-  default base language.
-- **v1.14.0** — downloads are now 16-stream parallel (measured ~5× faster) with
-  per-segment resume.
-- **v1.13.0** — accent colour now drives the whole UI including particles;
-  theme customisation no longer leaves stale red elements.
+- **v1.9** — telemetry module restored (empty credentials by default,
+  opt-in build step); license screen removed from the setup wizard; Discord
+  bot and OSINT toolkit kept; Windows-only build.
+- **v1.18** — chat auto-routes to your API when no local model is installed;
+  agent mode offered at setup; language switches instantly; API key auto-saves.
+- **v1.17** — white-on-accent text fixed; xKiro free cloud models listed and
+  self-hidden when the API stops answering.
+- **v1.16** — factory reset fixed (wizard reliably reappears).
+- **v1.15** — setup language selector works; English is the base default.
+- **v1.14** — 16-stream parallel downloads (~5× faster) with resume.
 
 ---
 
-## 11. Français (résumé)
+## 🇫🇷 Français (résumé)
 
-**WormGPT Desktop** est une application Windows qui fait tourner des **modèles
-d'IA en local**, hors ligne, sans compte ni cloud, avec une interface sombre
-rouge. Elle inclut 15 paliers de modèles non censurés, la lecture d'images, la
-génération d'images (stable-diffusion.cpp embarqué), la recherche web, le
-raisonnement, un serveur API local compatible OpenAI/Anthropic, un mode agent
-qui exécute des commandes locales, et 4 langues d'interface.
+**WormGPT Desktop** fait tourner des **modèles d'IA en local** sur Windows,
+sans compte ni cloud, avec une interface sombre rouge. 15 paliers de modèles
+non censurés, lecture d'images, génération d'images (stable-diffusion.cpp
+embarqué), recherche web, raisonnement, mode agent (commandes locales), serveur
+API local compatible OpenAI/Anthropic, et 4 langues d'interface.
 
-**Aucune donnée ne quitte votre machine** : pas de télémétrie, pas de jeton
-caché dans le code. Le réseau ne sert qu'au téléchargement des modèles, à la
-recherche web et aux API que vous configurez vous-même.
+**Téléchargement** : https://github.com/cameleonnbss/WormGPT-desktop/releases
 
-**Démarrage** : lancer `WormGPT.exe`, suivre l'assistant (langue, votre nom,
-nom de l'IA, modèle), puis télécharger un modèle dans l'onglet *Modèles* et
-discuter. Aucun droit administrateur requis.
+**Démarrage** : `build.bat` → `dist\WormGPT.exe`, assistant de configuration
+(langue, votre nom, nom de l'IA, modèle), puis téléchargez un palier dans
+l'onglet *Modèles*. Aucun droit administrateur requis.
 
-**Compilation** : `build.bat` (Python 3.12 + `requirements.txt`), puis
-`.venv\Scripts\python tools\selftest.py`. Le résultat est `dist\WormGPT.exe` —
-gardez le dossier `assets\` à côté.
+**Télémétrie** : désactivée par défaut — `telemetry.py` est vide dans le dépôt.
+Le propriétaire injecte ses identifiants au build via
+`tools\make_private.py --token <TOKEN> --guild <ID>`.
 
 **Où tout est stocké** : `%APPDATA%\WormGPT\` (config, conversations, images,
 modèles, journal de debug).
+
+---
+
+<p align="center"><sub>WormGPT Desktop — local first, always.</sub></p>
